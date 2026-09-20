@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>เกมจับคู่ Canva</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #EAF4FF;
+    --card-back: #6C5CE7;
+    --card-back-2: #8b7ff0;
+    --card-face: #FFFFFF;
+    --primary: #6C5CE7;
+    --primary-dark: #5849c2;
+    --success: #00B894;
+    --success-bg: #E4FBF5;
+    --text: #2D3436;
+    --text-soft: #6b7280;
+    --star: #FDCB6E;
+    --track: #DDE8F7;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #16213a;
+      --card-face: #1f2b4d;
+      --text: #EAF0FF;
+      --text-soft: #a9b6d6;
+      --track: #2c3a64;
+      --success-bg: #123a34;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #16213a;
+    --card-face: #1f2b4d;
+    --text: #EAF0FF;
+    --text-soft: #a9b6d6;
+    --track: #2c3a64;
+    --success-bg: #123a34;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    font-family: 'Sarabun', sans-serif;
+    color: var(--text);
+    padding: env(safe-area-inset-top,0px) 16px env(safe-area-inset-bottom,0px);
+    display: flex;
+    justify-content: center;
+  }
+  .stage {
+    width: 100%;
+    max-width: 520px;
+    padding: 24px 0 40px;
+  }
+  h1 {
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    font-size: 22px;
+    text-align: center;
+    margin: 0 0 4px;
+  }
+  p.sub {
+    text-align: center;
+    color: var(--text-soft);
+    font-size: 14px;
+    margin: 0 0 20px;
+  }
+  .stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+  }
+  .stat-chip {
+    background: var(--card-face);
+    padding: 6px 14px;
+    border-radius: 999px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .cell {
+    aspect-ratio: 1 / 1;
+    perspective: 800px;
+  }
+  .flip-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform .45s cubic-bezier(.4,.2,.2,1);
+  }
+  .flip-card.flipped { transform: rotateY(180deg); }
+  .flip-card.matched { cursor: default; }
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backface-visibility: hidden;
+    text-align: center;
+    padding: 6px;
+  }
+  .face-back {
+    background: linear-gradient(135deg, var(--card-back), var(--card-back-2));
+    font-size: 24px;
+    color: white;
+  }
+  .face-front {
+    background: var(--card-face);
+    transform: rotateY(180deg);
+    border: 2px solid var(--track);
+    flex-direction: column;
+    gap: 4px;
+  }
+  .face-front .icon { font-size: 30px; }
+  .face-front .label {
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+  .flip-card.matched .face-front {
+    background: var(--success-bg);
+    border-color: var(--success);
+  }
+
+  @media (max-width: 380px) {
+    .face-front .icon { font-size: 24px; }
+    .face-front .label { font-size: 10.5px; }
+  }
+
+  .result {
+    display: none;
+    text-align: center;
+    background: var(--card-face);
+    border-radius: 20px;
+    padding: 32px 24px;
+    margin-top: 8px;
+    box-shadow: 0 10px 40px rgba(76,60,160,.12);
+  }
+  .result.show { display: block; }
+  .grid.hide { display: none; }
+  .result .stars { font-size: 40px; margin-bottom: 6px; letter-spacing: 6px; }
+  .result h2 {
+    font-family: 'Kanit', sans-serif;
+    font-size: 24px;
+    margin: 4px 0 6px;
+  }
+  .result p { color: var(--text-soft); margin: 0 0 20px; font-size: 15px; }
+  .retry-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 12px 28px;
+    border-radius: 14px;
+    cursor: pointer;
+  }
+  .retry-btn:hover { background: var(--primary-dark); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flip-card { transition: none; }
+  }
+  button:focus-visible, .flip-card:focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 2px;
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <h1>🎴 เกมจับคู่เครื่องมือ Canva</h1>
+  <p class="sub">พลิกการ์ดหาไอคอนที่ตรงกับชื่อเครื่องมือ</p>
+
+  <div class="stats">
+    <span class="stat-chip">🔄 <span id="moves">0</span> ครั้ง</span>
+    <span class="stat-chip">✅ <span id="matches">0</span>/8 คู่</span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="result" id="result">
+    <div class="stars" id="result-stars">⭐⭐⭐</div>
+    <h2 id="result-title">เก่งมากเลย!</h2>
+    <p id="result-sub">จับคู่ครบใน 0 ครั้ง</p>
+    <button class="retry-btn" id="retry-btn">เล่นอีกครั้ง</button>
+  </div>
+</div>
+
+<script>
+const pairs = [
+  { icon: "📝", label: "Text\n(ข้อความ)" },
+  { icon: "🖼️", label: "Elements\n(องค์ประกอบ)" },
+  { icon: "🎨", label: "Background\n(พื้นหลัง)" },
+  { icon: "⬆️", label: "Upload\n(อัปโหลด)" },
+  { icon: "📐", label: "Resize\n(ปรับขนาด)" },
+  { icon: "⬇️", label: "Download\n(ดาวน์โหลด)" },
+  { icon: "✍️", label: "Magic Write" },
+  { icon: "🪄", label: "Magic Design" }
+];
+
+let deck = [];
+let flipped = [];
+let matchedCount = 0;
+let moves = 0;
+let lock = false;
+
+const gridEl = document.getElementById("grid");
+const movesEl = document.getElementById("moves");
+const matchesEl = document.getElementById("matches");
+const resultEl = document.getElementById("result");
+const retryBtn = document.getElementById("retry-btn");
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildDeck() {
+  let cards = [];
+  pairs.forEach((pair, pid) => {
+    cards.push({ pid, type: "icon", icon: pair.icon, label: "" });
+    cards.push({ pid, type: "label", icon: "", label: pair.label });
+  });
+  deck = shuffle(cards);
+}
+
+function render() {
+  gridEl.innerHTML = "";
+  gridEl.classList.remove("hide");
+  deck.forEach((card, index) => {
+    const cell = document.createElement("div");
+    cell.className = "cell";
+    cell.innerHTML = `
+      <div class="flip-card" data-index="${index}" tabindex="0" role="button" aria-label="การ์ด">
+        <div class="face face-back">?</div>
+        <div class="face face-front">
+          ${card.type === "icon" ? `<div class="icon">${card.icon}</div>` : `<div class="label">${card.label.replace("\n","<br>")}</div>`}
+        </div>
+      </div>`;
+    const flipCard = cell.querySelector(".flip-card");
+    flipCard.addEventListener("click", () => handleFlip(index, flipCard));
+    flipCard.addEventListener("keypress", (e) => { if (e.key === "Enter" || e.key === " ") handleFlip(index, flipCard); });
+    gridEl.appendChild(cell);
+  });
+}
+
+function handleFlip(index, el) {
+  if (lock) return;
+  if (el.classList.contains("flipped") || el.classList.contains("matched")) return;
+  if (flipped.length === 2) return;
+
+  el.classList.add("flipped");
+  flipped.push({ index, el });
+
+  if (flipped.length === 2) {
+    moves++;
+    movesEl.textContent = moves;
+    lock = true;
+    const [a, b] = flipped;
+    const cardA = deck[a.index];
+    const cardB = deck[b.index];
+    const isMatch = cardA.pid === cardB.pid && cardA.type !== cardB.type;
+
+    if (isMatch) {
+      setTimeout(() => {
+        a.el.classList.add("matched");
+        b.el.classList.add("matched");
+        matchedCount++;
+        matchesEl.textContent = matchedCount;
+        flipped = [];
+        lock = false;
+        if (matchedCount === pairs.length) {
+          setTimeout(showResult, 500);
+        }
+      }, 400);
+    } else {
+      setTimeout(() => {
+        a.el.classList.remove("flipped");
+        b.el.classList.remove("flipped");
+        flipped = [];
+        lock = false;
+      }, 800);
+    }
+  }
+}
+
+function showResult() {
+  gridEl.classList.add("hide");
+  resultEl.classList.add("show");
+  let stars = "⭐";
+  let title = "จบเกมแล้ว!";
+  if (moves <= 10) { stars = "⭐⭐⭐"; title = "เก่งมากเลย! ความจำดีมาก 🎉"; }
+  else if (moves <= 16) { stars = "⭐⭐"; title = "ทำได้ดีมาก!"; }
+  else { title = "จบเกมแล้ว! ลองใหม่ให้เร็วขึ้นนะ"; }
+  document.getElementById("result-stars").textContent = stars;
+  document.getElementById("result-title").textContent = title;
+  document.getElementById("result-sub").textContent = `จับคู่ครบ 8 คู่ ใน ${moves} ครั้ง`;
+}
+
+function startGame() {
+  matchedCount = 0;
+  moves = 0;
+  flipped = [];
+  lock = false;
+  movesEl.textContent = "0";
+  matchesEl.textContent = "0";
+  resultEl.classList.remove("show");
+  buildDeck();
+  render();
+}
+
+retryBtn.addEventListener("click", startGame);
+startGame();
+</script>
+</body>
+</html>
