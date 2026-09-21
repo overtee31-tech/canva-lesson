@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>นำเสนอโครงงาน — Canva Learning Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700;800&family=Sarabun:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0B1120;
+    --card: #131B31;
+    --card-border: #223055;
+    --accent: #FF4D5E;
+    --accent-2: #2F8FFF;
+    --text: #EDF1FB;
+    --text-soft: #97A3C4;
+    --chip-bg: #1B2542;
+    --success: #33D17A;
+  }
+  :root[data-theme="light"] {
+    --bg: #0B1120; --card: #131B31; --card-border: #223055;
+    --text: #EDF1FB; --text-soft: #97A3C4; --chip-bg: #1B2542;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%;
+    background: var(--bg); color: var(--text);
+    font-family: 'Sarabun', sans-serif;
+    overflow: hidden;
+  }
+  body {
+    display: flex; flex-direction: column;
+    padding: env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);
+  }
+
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px;
+    flex-shrink: 0;
+  }
+  .brand {
+    font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 14px;
+    display: flex; align-items: center; gap: 8px; color: var(--text-soft);
+  }
+  .brand .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  .back-link {
+    font-family: 'Kanit', sans-serif; font-size: 13px; font-weight: 600;
+    color: var(--text-soft); text-decoration: none;
+  }
+  .back-link:hover { color: var(--accent-2); }
+
+  .deck {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 28px 40px;
+    text-align: left;
+  }
+  .slide.active { display: flex; }
+  .slide-inner { width: 100%; max-width: 720px; max-height: 100%; overflow-y: auto; }
+
+  .eyebrow {
+    font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: 2px;
+    color: var(--accent); display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+  }
+  .eyebrow::before { content:""; width:8px; height:8px; border-radius:50%; background: var(--accent); }
+  h1.big {
+    font-family: 'Kanit', sans-serif; font-weight: 700;
+    font-size: clamp(24px, 5.5vw, 38px); line-height: 1.3; margin: 0 0 14px;
+  }
+  h2.mid {
+    font-family: 'Kanit', sans-serif; font-weight: 600;
+    font-size: clamp(20px, 4.2vw, 26px); margin: 0 0 20px;
+  }
+  p.body-text { color: var(--text-soft); font-size: clamp(14px,2.4vw,17px); line-height: 1.8; margin: 0 0 14px; }
+  .list { margin: 0; padding: 0; list-style: none; }
+  .list li {
+    color: var(--text-soft); font-size: clamp(14px,2.2vw,16.5px); line-height: 1.7;
+    padding: 10px 0 10px 30px; position: relative; border-bottom: 1px solid var(--card-border);
+  }
+  .list li:last-child { border-bottom: none; }
+  .list li::before {
+    content: "→"; position: absolute; left: 0; color: var(--accent-2); font-weight: 700;
+  }
+  .list.numbered li::before { content: counter(li); counter-increment: li; }
+  .list.numbered { counter-reset: li; }
+  .list.numbered li {
+    padding-left: 34px;
+  }
+  .list.numbered li::before {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--chip-bg); color: var(--accent-2);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Kanit', sans-serif; font-size: 12px; font-weight: 700;
+    left: 0; top: 8px;
+  }
+
+  .card-grid { display: flex; flex-direction: column; gap: 12px; margin-top: 6px; }
+  .demo-card {
+    background: var(--card); border: 1.5px solid var(--card-border); border-radius: 16px;
+    padding: 18px 20px; display: flex; align-items: center; gap: 14px;
+    text-decoration: none; color: inherit;
+    transition: border-color .2s ease, transform .15s ease;
+  }
+  .demo-card:hover { border-color: var(--accent-2); transform: translateY(-2px); }
+  .demo-card .ic { font-size: 26px; flex-shrink: 0; }
+  .demo-card .txt h3 { font-family: 'Kanit', sans-serif; font-size: 16px; margin: 0 0 3px; }
+  .demo-card .txt p { color: var(--text-soft); font-size: 13px; margin: 0; }
+  .demo-card .go { margin-left: auto; color: var(--accent-2); font-family:'Kanit',sans-serif; font-weight:600; font-size: 13px; flex-shrink:0; }
+
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .chip { background: var(--chip-bg); border: 1px solid var(--card-border); font-size: 12.5px; padding: 6px 12px; border-radius: 999px; }
+
+  .center-slide { text-align: center; }
+  .center-slide .slide-inner { display: flex; flex-direction: column; align-items: center; }
+  .big-emoji { font-size: 54px; margin-bottom: 10px; }
+
+  /* Nav controls */
+  .nav-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px calc(14px + env(safe-area-inset-bottom, 0px));
+    flex-shrink: 0;
+  }
+  .nav-btn {
+    background: var(--card); border: 1.5px solid var(--card-border); color: var(--text);
+    font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 14px;
+    padding: 10px 18px; border-radius: 12px; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .nav-btn:disabled { opacity: .35; cursor: default; }
+  .nav-btn:not(:disabled):hover { border-color: var(--accent-2); }
+  .dots { display: flex; gap: 6px; }
+  .dots span {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--card-border);
+    transition: background .2s ease, width .2s ease;
+  }
+  .dots span.on { background: var(--accent); width: 18px; border-radius: 4px; }
+  .counter { font-family:'Space Mono',monospace; font-size: 12px; color: var(--text-soft); }
+
+  @media (max-width: 480px) {
+    .dots { display: none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <span class="brand"><span class="dot"></span> CANVA LEARNING LAB · นำเสนอโครงงาน</span>
+    <a class="back-link" href="index.html">← กลับหน้าเมนู</a>
+  </div>
+
+  <div class="deck" id="deck">
+
+    <!-- Slide 1: Title -->
+    <section class="slide active center-slide">
+      <div class="slide-inner">
+        <div class="big-emoji">🎨</div>
+        <p class="eyebrow" style="justify-content:center">โครงงานวิจัย</p>
+        <h1 class="big">บทเรียนออนไลน์แบบมีปฏิสัมพันธ์<br>เรื่อง การใช้งานเครื่องมือพื้นฐานใน Canva<br>และการใช้ Canva AI สร้างเกมเพื่อการเรียนรู้</h1>
+        <p class="body-text">สำหรับนักเรียนชั้นประถมศึกษาปีที่ 4-6</p>
+      </div>
+    </section>
+
+    <!-- Slide 2: ความเป็นมา -->
+    <section class="slide">
+      <div class="slide-inner">
+        <p class="eyebrow">01 · ที่มาและความสำคัญ</p>
+        <h2 class="mid">ทำไมต้องทำโครงงานนี้</h2>
+        <p class="body-text">ปัจจุบันเทคโนโลยีดิจิทัลมีบทบาทสำคัญต่อการจัดการเรียนการสอนมากขึ้น โดยเฉพาะแอปพลิเคชัน Canva ซึ่งเป็นเครื่องมือออกแบบที่มีฟีเจอร์ Canva AI ช่วยสร้างสรรค์ผลงานได้อย่างรวดเร็ว</p>
+        <p class="body-text">แต่นักเรียนชั้นประถมศึกษาปีที่ 4-6 ส่วนใหญ่ยังขาดทักษะการใช้เครื่องมือ Canva อย่างเป็นระบบ และยังไม่รู้จักนำ Canva AI มาประยุกต์สร้างเกมเพื่อการเรียนรู้ด้วยตนเอง</p>
+        <p class="body-text">จึงพัฒนาบทเรียนออนไลน์แบบมีปฏิสัมพันธ์ที่มีแบบทดสอบก่อน-หลังเรียนพร้อมคำอธิบายเฉลย เพื่อช่วยให้นักเรียนเรียนรู้ได้อย่างมีประสิทธิภาพมากขึ้น</p>
+      </div>
+    </section>
+
+    <!-- Slide 3: วัตถุประสงค์ -->
+    <section class="slide">
+      <div class="slide-inner">
+        <p class="eyebrow">02 · วัตถุประสงค์ของโครงงาน</p>
+        <h2 class="mid">เป้าหมาย 4 ข้อ</h2>
+        <ol class="list numbered">
+          <li>เพื่อศึกษาและทบทวนการใช้งานเครื่องมือใน Canva และ Canva AI</li>
+          <li>เพื่อสร้างบทเรียนออนไลน์แบบมีปฏิสัมพันธ์โดยใช้ Canva และ Canva AI</li>
+          <li>เพื่อหาประสิทธิภาพของบทเรียนออนไลน์ที่สร้างขึ้น</li>
+          <li>เพื่อหาความพึงพอใจของนักเรียนที่มีต่อบทเรียนที่สร้างขึ้น</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Slide 4: สมมติฐาน -->
+    <section class="slide">
+      <div class="slide-inner">
+        <p class="eyebrow">03 · สมมติฐานการวิจัย</p>
+        <h2 class="mid">คาดว่าผลจะเป็นอย่างไร</h2>
+        <ul class="list">
+          <li>นักเรียนที่เรียนด้วยบทเรียนออนไลน์แบบมีปฏิสัมพันธ์มีคะแนนทดสอบหลังเรียนสูงกว่าก่อนเรียนอย่างมีนัยสำคัญ</li>
+          <li>บทเรียนออนไลน์แบบมีปฏิสัมพันธ์มีประสิทธิภาพตามเกณฑ์ 80/80</li>
+          <li>นักเรียนมีความพึงพอใจต่อบทเรียนอยู่ในระดับมาก</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Slide 5: ขอบเขต -->
+    <section class="slide">
+      <div class="slide-inner">
+        <p class="eyebrow">04 · ขอบเขตของการวิจัย</p>
+        <h2 class="mid">ทำแค่ไหน กับใคร</h2>
+        <p class="body-text"><b style="color:var(--text)">ด้านเนื้อหา:</b> การใช้งานเครื่องมือพื้นฐานในแอป Canva และการใช้ Canva AI สร้างเกมเพื่อการเรียนรู้ (เกมจับคู่ เกมคำถาม-คำตอบ)</p>
+        <p class="body-text"><b style="color:var(--text)">ด้านประชากร/กลุ่มตัวอย่าง:</b> นักเรียนชั้นประถมศึกษาปีที่ 4-6</p>
+        <p class="body-text"><b style="color:var(--text)">ด้านตัวแปร:</b> ตัวแปรต้น คือบทเรียนออนไลน์แบบมีปฏิสัมพันธ์ที่ใช้ Canva และ Canva AI · ตัวแปรตาม คือผลสัมฤทธิ์ทางการเรียน</p>
+      </div>
+    </section>
+
+    <!-- Slide 6: วิธีดำเนินการ -->
+    <section class="slide">
+      <div class="slide-inner">
+        <p class="eyebrow">05 · วิธีดำเนินการวิจัย</p>
+        <h2 class="mid">ขั้นตอนการทำงาน</h2>
+        <ol class="list numbered">
+          <li>ศึกษาเอกสารและงานวิจัยที่เกี่ยวข้องกับ Canva, Canva AI และบทเรียนแบบมีปฏิสัมพันธ์</li>
+          <li>ออกแบบโครงสร้างบทเรียน ได้แก่ แบบทดสอบก่อนเรียน เนื้อหา และแบบทดสอบหลังเรียน</li>
+          <li>สร้างบทเรียนออนไลน์ด้วย Canva โดยใช้ Canva AI ช่วยสร้างคำถามและออกแบบข้อสอบ</li>
+          <li>นำบทเรียนที่สร้างเสร็จให้ผู้เชี่ยวชาญตรวจสอบความถูกต้อง</li>
+          <li>ทดลองใช้กับกลุ่มตัวอย่าง เก็บคะแนนก่อน-หลังเรียน และแบบสอบถามความพึงพอใจ</li>
+          <li>เก็บรวบรวมข้อมูลคะแนนก่อน-หลังเรียน และวิเคราะห์ความพึงพอใจ</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Slide 7: ภาพรวมสื่อ -->
+    <section class="slide">
+      <div class="slide-inner">
+        <p class="eyebrow">06 · สิ่งที่พัฒนาขึ้น</p>
+        <h2 class="mid">สื่อการเรียนรู้ 3 ชิ้น</h2>
+        <p class="body-text">พัฒนาเป็นเว็บไซต์ที่เปิดใช้งานได้จริง ประกอบด้วย 3 ส่วนหลัก ต่อไปนี้เป็นการสาธิตให้ดูสดๆ ค่ะ</p>
+        <div class="chip-row">
+          <span class="chip">📚 เนื้อหา + แบบทดสอบ</span>
+          <span class="chip">❓ เกมคำถาม-คำตอบ</span>
+          <span class="chip">🎴 เกมจับคู่เครื่องมือ</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 8: Demo Learning Lab -->
+    <section class="slide">
+      <div class="slide-inner">
+        <p class="eyebrow">สาธิตที่ 1</p>
+        <h2 class="mid">📚 Canva Learning Lab</h2>
+        <p class="body-text">หน้าเว็บรวมเนื้อหาบทเรียนเรื่อง Canva และ Canva AI พร้อมแบบทดสอบท้ายบท 10 ข้อ ในหน้าเดียว — ตอบคำถามแล้วเนื้อหาด้านบนจะไฮไลต์ตามหัวข้อที่เกี่ยวข้องโดยอัตโนมัติ</p>
+        <div class="card-grid">
+          <a class="demo-card" href="learning-lab.html" target="_blank" rel="noopener">
+            <span class="ic">📚</span>
+            <span class="txt"><h3>เปิดสาธิตสด</h3><p>learning-lab.html</p></span>
+            <span class="go">เปิด →</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 9: Demo Quiz -->
+    <section class="slide">
+      <div class="slide-inner">
+        <p class="eyebrow">สาธิตที่ 2</p>
+        <h2 class="mid">❓ เกมคำถาม-คำตอบ</h2>
+        <p class="body-text">แบบทดสอบเชิงเกม 10 ข้อ เกี่ยวกับขั้นตอนการทำงานและการสร้างเกมด้วย Canva AI ตอบแล้วเห็นผลถูก/ผิดพร้อมคำอธิบายทันที มีระบบให้คะแนนและดาวสรุปผล</p>
+        <div class="card-grid">
+          <a class="demo-card" href="quiz-game.html" target="_blank" rel="noopener">
+            <span class="ic">❓</span>
+            <span class="txt"><h3>เปิดสาธิตสด</h3><p>quiz-game.html</p></span>
+            <span class="go">เล่น →</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 10: Demo Matching -->
+    <section class="slide">
+      <div class="slide-inner">
+        <p class="eyebrow">สาธิตที่ 3</p>
+        <h2 class="mid">🎴 เกมจับคู่เครื่องมือ Canva</h2>
+        <p class="body-text">เกมพลิกการ์ดจับคู่ไอคอนเครื่องมือกับชื่อเครื่องมือใน Canva ทั้งหมด 8 คู่ นับจำนวนครั้งที่พลิก จบเกมได้ดาวตามความเร็วและความจำ</p>
+        <div class="card-grid">
+          <a class="demo-card" href="matching-game.html" target="_blank" rel="noopener">
+            <span class="ic">🎴</span>
+            <span class="txt"><h3>เปิดสาธิตสด</h3><p>matching-game.html</p></span>
+            <span class="go">เล่น →</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 11: ประโยชน์ -->
+    <section class="slide">
+      <div class="slide-inner">
+        <p class="eyebrow">07 · ประโยชน์ที่คาดว่าจะได้รับ</p>
+        <h2 class="mid">สิ่งที่จะเกิดขึ้นจากโครงงานนี้</h2>
+        <ol class="list numbered">
+          <li>นักเรียนสามารถใช้เครื่องมือในแอป Canva ได้อย่างถูกต้องและมีประสิทธิภาพ</li>
+          <li>นักเรียนมีทักษะการใช้ Canva AI ในการสร้างเกมเพื่อการเรียนรู้</li>
+          <li>ได้บทเรียนออนไลน์แบบมีปฏิสัมพันธ์ที่นำไปใช้จัดการเรียนการสอนได้จริง</li>
+          <li>เป็นแนวทางให้ครูผู้สอนนำไปประยุกต์สร้างสื่อการสอนในรายวิชาอื่นๆ</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Slide 12: Thank you -->
+    <section class="slide center-slide">
+      <div class="slide-inner">
+        <div class="big-emoji">🙏</div>
+        <h1 class="big">ขอบคุณค่ะ</h1>
+        <p class="body-text">พร้อมตอบคำถามและสาธิตเพิ่มเติมค่ะ</p>
+        <div class="chip-row" style="justify-content:center">
+          <span class="chip">📚 Canva Learning Lab</span>
+          <span class="chip">❓ เกมคำถาม-คำตอบ</span>
+          <span class="chip">🎴 เกมจับคู่</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="nav-bar">
+    <button class="nav-btn" id="prev-btn">← ก่อนหน้า</button>
+    <div style="display:flex; align-items:center; gap:14px;">
+      <span class="counter" id="counter">1 / 12</span>
+      <div class="dots" id="dots"></div>
+    </div>
+    <button class="nav-btn" id="next-btn">ถัดไป →</button>
+  </div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const counter = document.getElementById('counter');
+  const dotsEl = document.getElementById('dots');
+  let idx = 0;
+
+  slides.forEach((_, i) => {
+    const d = document.createElement('span');
+    dotsEl.appendChild(d);
+  });
+  const dots = Array.from(dotsEl.children);
+
+  function render() {
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    dots.forEach((d, i) => d.classList.toggle('on', i === idx));
+    counter.textContent = `${idx + 1} / ${slides.length}`;
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === slides.length - 1;
+  }
+
+  function go(delta) {
+    idx = Math.min(slides.length - 1, Math.max(0, idx + delta));
+    render();
+  }
+
+  prevBtn.addEventListener('click', () => go(-1));
+  nextBtn.addEventListener('click', () => go(1));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') go(1);
+    if (e.key === 'ArrowLeft') go(-1);
+  });
+
+  let touchStartX = null;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', (e) => {
+    if (touchStartX === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+    touchStartX = null;
+  }, { passive: true });
+
+  render();
+</script>
+</body>
+</html>
