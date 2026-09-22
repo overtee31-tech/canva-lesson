@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>สรุปบทเรียน — Canva &amp; Canva AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700;800&family=Sarabun:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0B1120;
+    --card: #131B31;
+    --card-border: #223055;
+    --accent: #FF4D5E;
+    --accent-2: #2F8FFF;
+    --text: #EDF1FB;
+    --text-soft: #97A3C4;
+    --chip-bg: #1B2542;
+  }
+  :root[data-theme="light"] {
+    --bg: #0B1120; --card: #131B31; --card-border: #223055;
+    --text: #EDF1FB; --text-soft: #97A3C4; --chip-bg: #1B2542;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sarabun', sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 20px 60px; }
+
+  .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 20px;
+  }
+  .brand { display: flex; align-items: center; gap: 8px; font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 15px; }
+  .brand .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .back-link { font-family: 'Kanit', sans-serif; font-size: 13px; font-weight: 600; color: var(--text-soft); text-decoration: none; }
+  .back-link:hover { color: var(--accent-2); }
+
+  .eyebrow {
+    font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: 2px;
+    color: var(--accent); display: flex; align-items: center; gap: 8px; margin: 14px 0 14px;
+  }
+  .eyebrow::before { content:""; width:8px; height:8px; border-radius:50%; background: var(--accent); }
+  h1.title { font-family: 'Kanit', sans-serif; font-weight: 700; font-size: clamp(26px,6vw,36px); line-height: 1.3; margin: 0 0 10px; }
+  p.desc { color: var(--text-soft); font-size: 15.5px; line-height: 1.7; margin: 0 0 30px; max-width: 60ch; }
+
+  h2.section-title {
+    font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 21px;
+    margin: 34px 0 14px; display: flex; align-items: center; gap: 10px;
+  }
+  h2.section-title .num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--chip-bg); color: var(--accent-2);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace; font-size: 13px; flex-shrink: 0;
+  }
+
+  .summary-card {
+    background: var(--card); border: 1.5px solid var(--card-border);
+    border-radius: 16px; padding: 20px 22px; margin-bottom: 12px;
+  }
+  .summary-card p { color: var(--text-soft); font-size: 15px; line-height: 1.75; margin: 0; }
+  .summary-card p + p { margin-top: 10px; }
+
+  table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 14px; overflow: hidden; }
+  th, td { text-align: left; padding: 12px 14px; font-size: 14px; border-bottom: 1px solid var(--card-border); }
+  th { font-family: 'Kanit', sans-serif; font-weight: 600; color: var(--accent-2); background: var(--chip-bg); font-size: 13px; }
+  td { color: var(--text-soft); }
+  tr:last-child td { border-bottom: none; }
+  td:first-child { color: var(--text); font-weight: 500; }
+
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { background: var(--chip-bg); border: 1px solid var(--card-border); font-size: 13px; padding: 7px 13px; border-radius: 999px; }
+
+  ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; }
+  ol.steps li {
+    counter-increment: s;
+    padding: 10px 0 10px 34px;
+    position: relative;
+    color: var(--text-soft);
+    font-size: 14.5px;
+    line-height: 1.6;
+    border-bottom: 1px solid var(--card-border);
+  }
+  ol.steps li:last-child { border-bottom: none; }
+  ol.steps li::before {
+    content: counter(s);
+    position: absolute; left: 0; top: 8px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--chip-bg); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Kanit', sans-serif; font-size: 12px; font-weight: 700;
+  }
+
+  .key-points { margin: 0; padding: 0; list-style: none; }
+  .key-points li {
+    padding: 12px 0 12px 30px; position: relative;
+    color: var(--text-soft); font-size: 15px; line-height: 1.7;
+    border-bottom: 1px solid var(--card-border);
+  }
+  .key-points li:last-child { border-bottom: none; }
+  .key-points li::before { content: "✓"; position: absolute; left: 0; color: var(--accent-2); font-weight: 700; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 560px) { .two-col { grid-template-columns: 1fr; } }
+  .mini-card { background: var(--card); border: 1.5px solid var(--card-border); border-radius: 14px; padding: 16px 18px; }
+  .mini-card h3 { font-family: 'Kanit', sans-serif; font-size: 15px; margin: 0 0 8px; display: flex; align-items: center; gap: 6px; }
+
+  footer { text-align: center; color: var(--text-soft); font-size: 13px; padding-top: 40px; }
+
+  @media print {
+    body { background: white; color: black; }
+    .nav, footer { display: none; }
+    .summary-card, table, .mini-card { border-color: #ccc; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+  <nav class="nav">
+    <span class="brand"><span class="dot"></span> Canva Learning Hub</span>
+    <a class="back-link" href="index.html">← กลับหน้าเมนู</a>
+  </nav>
+
+  <div class="wrap">
+    <p class="eyebrow">สรุปบทเรียน</p>
+    <h1 class="title">การใช้งานเครื่องมือพื้นฐานใน Canva<br>และการใช้ Canva AI สร้างเกมเพื่อการเรียนรู้</h1>
+    <p class="desc">สรุปย่อเนื้อหาทั้งหมดในหน้าเดียว เหมาะสำหรับทบทวนก่อนทำแบบทดสอบ หรือพิมพ์เก็บไว้อ่านค่ะ</p>
+
+    <h2 class="section-title"><span class="num">1</span> Canva คืออะไร</h2>
+    <div class="summary-card">
+      <p>โปรแกรมออกแบบกราฟิกออนไลน์ที่ใช้งานง่าย มีเทมเพลตสำเร็จรูปมากมาย เหมาะสำหรับสร้างงานนำเสนอ โปสเตอร์ การ์ด และสื่อการเรียนรู้ โดยไม่ต้องมีพื้นฐานการออกแบบมาก่อน</p>
+    </div>
+
+    <h2 class="section-title"><span class="num">2</span> เครื่องมือพื้นฐาน</h2>
+    <table>
+      <tr><th>เครื่องมือ</th><th>หน้าที่</th></tr>
+      <tr><td>Text</td><td>เพิ่ม/แก้ไขตัวอักษร ปรับฟอนต์ สี ขนาด</td></tr>
+      <tr><td>Elements</td><td>เพิ่มรูปภาพ ไอคอน กราฟิกตกแต่ง</td></tr>
+      <tr><td>Background</td><td>เปลี่ยนสีหรือลวดลายพื้นหลัง</td></tr>
+      <tr><td>Upload</td><td>นำรูปของตัวเองเข้ามาใช้งาน</td></tr>
+      <tr><td>Resize</td><td>เปลี่ยนขนาดชิ้นงานให้เหมาะกับการใช้งาน</td></tr>
+      <tr><td>Download</td><td>บันทึกชิ้นงานเป็นไฟล์ภาพหรือ PDF</td></tr>
+    </table>
+
+    <h2 class="section-title"><span class="num">3</span> Canva AI</h2>
+    <div class="summary-card" style="margin-bottom:14px">
+      <p>ปัญญาประดิษฐ์ในแอป Canva ที่ช่วยสร้างชิ้นงานได้รวดเร็วขึ้น โดยไม่ต้องออกแบบเองทั้งหมด</p>
+    </div>
+    <div class="two-col">
+      <div class="mini-card"><h3>✍️ Magic Write</h3><p style="color:var(--text-soft);font-size:13.5px;margin:0">เขียนข้อความ/คำถามอัตโนมัติ</p></div>
+      <div class="mini-card"><h3>🪄 Magic Design</h3><p style="color:var(--text-soft);font-size:13.5px;margin:0">แนะนำเทมเพลตอัตโนมัติ</p></div>
+      <div class="mini-card"><h3>🖼️ Text to Image</h3><p style="color:var(--text-soft);font-size:13.5px;margin:0">สร้างภาพจากคำบรรยาย</p></div>
+    </div>
+
+    <h2 class="section-title"><span class="num">4</span> สร้างเกมจับคู่ (Matching Game)</h2>
+    <div class="summary-card">
+      <ol class="steps">
+        <li>ค้นหาเทมเพลต "เกมจับคู่" หรือ "Matching Game"</li>
+        <li>ใช้ Magic Write พิมพ์หัวข้อให้ช่วยคิดคำ/รูปสำหรับจับคู่</li>
+        <li>ใช้ Elements หรือ Text to Image เพิ่มรูปภาพ/คำศัพท์</li>
+        <li>จัดวางตำแหน่งการ์ดให้เรียบร้อย แล้ว Download</li>
+      </ol>
+    </div>
+
+    <h2 class="section-title"><span class="num">5</span> สร้างเกมคำถาม-คำตอบ (Quiz Game)</h2>
+    <div class="summary-card">
+      <ol class="steps">
+        <li>ค้นหาเทมเพลต "Quiz" หรือ "แบบทดสอบ"</li>
+        <li>ใช้ Magic Write ช่วยสร้างคำถามและตัวเลือกคำตอบ</li>
+        <li>ตรวจสอบและแก้ไขคำถามให้ถูกต้องเหมาะสม</li>
+        <li>ตกแต่งด้วย Elements และ Text แล้ว Download หรือแชร์ลิงก์</li>
+      </ol>
+    </div>
+
+    <h2 class="section-title"><span class="num">6</span> สรุปสิ่งที่ต้องจำ</h2>
+    <div class="summary-card" style="padding:6px 22px">
+      <ul class="key-points">
+        <li>Canva เป็นเครื่องมือออกแบบที่ใช้งานง่าย มีเครื่องมือพื้นฐาน เช่น Text, Elements, Background, Resize</li>
+        <li>Canva AI ช่วยให้สร้างชิ้นงานได้รวดเร็วขึ้นด้วย Magic Write, Magic Design, Text to Image</li>
+        <li>ใช้ Canva และ Canva AI สร้างเกมเพื่อการเรียนรู้ได้ทั้งเกมจับคู่และเกมคำถาม-คำตอบ</li>
+      </ul>
+    </div>
+
+    <div class="chip-row" style="margin-top:24px">
+      <span class="chip">📚 อ่านเนื้อหาเต็ม + ทำแบบทดสอบ</span>
+      <span class="chip">❓ เล่นเกมคำถาม-คำตอบ</span>
+      <span class="chip">🎴 เล่นเกมจับคู่</span>
+    </div>
+
+    <footer>Canva Learning Hub · สรุปบทเรียนสำหรับนักเรียนชั้นประถมศึกษาปีที่ 4-6</footer>
+  </div>
+</body>
+</html>
