@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เกมคำถาม-คำตอบ Canva</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #EAF4FF;
+    --card: #FFFFFF;
+    --primary: #6C5CE7;
+    --primary-dark: #5849c2;
+    --success: #00B894;
+    --success-bg: #E4FBF5;
+    --error: #FF6B6B;
+    --error-bg: #FFEDED;
+    --text: #2D3436;
+    --text-soft: #6b7280;
+    --star: #FDCB6E;
+    --track: #DDE8F7;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #16213a;
+      --card: #1f2b4d;
+      --text: #EAF0FF;
+      --text-soft: #a9b6d6;
+      --track: #2c3a64;
+      --success-bg: #123a34;
+      --error-bg: #4a2233;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #16213a;
+    --card: #1f2b4d;
+    --text: #EAF0FF;
+    --text-soft: #a9b6d6;
+    --track: #2c3a64;
+    --success-bg: #123a34;
+    --error-bg: #4a2233;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    font-family: 'Sarabun', sans-serif;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+  .stage {
+    width: 100%;
+    max-width: 560px;
+  }
+  .top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-soft);
+  }
+  .score-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--card);
+    padding: 6px 14px;
+    border-radius: 999px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  }
+  .track {
+    height: 10px;
+    background: var(--track);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  .fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), #8b7ff0);
+    border-radius: 999px;
+    transition: width .4s ease;
+    width: 10%;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 24px;
+    padding: 32px 28px;
+    box-shadow: 0 10px 40px rgba(76, 60, 160, 0.12);
+  }
+  .eyebrow {
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 14px;
+    margin: 0 0 10px;
+  }
+  h1.question {
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 1.5;
+    margin: 0 0 24px;
+  }
+  .choices {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .choice {
+    text-align: left;
+    border: 2px solid var(--track);
+    background: transparent;
+    color: var(--text);
+    font-family: 'Sarabun', sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    padding: 14px 18px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: border-color .15s ease, transform .1s ease, background .15s ease;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .choice .letter {
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    color: var(--primary);
+    flex-shrink: 0;
+  }
+  .choice:hover:not(:disabled) {
+    border-color: var(--primary);
+    transform: translateY(-1px);
+  }
+  .choice:disabled { cursor: default; }
+  .choice.correct {
+    border-color: var(--success);
+    background: var(--success-bg);
+  }
+  .choice.correct .letter { color: var(--success); }
+  .choice.wrong {
+    border-color: var(--error);
+    background: var(--error-bg);
+  }
+  .choice.wrong .letter { color: var(--error); }
+  .choice.dim { opacity: .45; }
+
+  .feedback {
+    margin-top: 20px;
+    padding: 16px 18px;
+    border-radius: 14px;
+    font-size: 15px;
+    line-height: 1.6;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.correct { background: var(--success-bg); color: #067a5f; }
+  .feedback.wrong { background: var(--error-bg); color: #c23a3a; }
+  .feedback b { font-family: 'Kanit', sans-serif; }
+
+  .next-btn {
+    margin-top: 20px;
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    padding: 14px;
+    border-radius: 14px;
+    cursor: pointer;
+    display: none;
+    transition: background .15s ease;
+  }
+  .next-btn:hover { background: var(--primary-dark); }
+  .next-btn.show { display: block; }
+
+  /* Result screen */
+  .result { display: none; text-align: center; }
+  .result.show { display: block; }
+  .result .stars { font-size: 44px; margin-bottom: 8px; letter-spacing: 6px; }
+  .result h2 {
+    font-family: 'Kanit', sans-serif;
+    font-size: 26px;
+    margin: 4px 0 6px;
+  }
+  .result p.sub {
+    color: var(--text-soft);
+    margin: 0 0 24px;
+    font-size: 16px;
+  }
+  .result .big-score {
+    font-family: 'Kanit', sans-serif;
+    font-weight: 700;
+    font-size: 48px;
+    color: var(--primary);
+    margin-bottom: 4px;
+  }
+  .retry-btn {
+    margin-top: 12px;
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 12px 24px;
+    border-radius: 14px;
+    cursor: pointer;
+  }
+  .retry-btn:hover { background: var(--primary); color: white; }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .card-header .eyebrow { margin: 0; }
+  .pause-btn {
+    background: transparent;
+    border: 1.5px solid var(--track);
+    color: var(--text-soft);
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    font-size: 12.5px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .pause-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+  .result-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .continue-btn {
+    display: none;
+    background: var(--primary);
+    color: white;
+    border: none;
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 14px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: background .15s ease;
+  }
+  .continue-btn:hover { background: var(--primary-dark); }
+  .result.paused .continue-btn { display: block; }
+  .result.paused .retry-btn { width: 100%; }
+
+  .answer-summary {
+    margin-top: 22px;
+    text-align: left;
+    background: linear-gradient(165deg, var(--card), var(--bg));
+    border: 1px solid var(--track);
+    border-radius: 18px;
+    padding: 18px 18px 16px;
+    box-shadow: 0 8px 24px rgba(76, 60, 160, 0.08);
+  }
+  .summary-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .ring-wrap {
+    position: relative;
+    width: 68px;
+    height: 68px;
+    flex-shrink: 0;
+  }
+  .ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: var(--track); stroke-width: 8; }
+  .ring-fg {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset .6s ease;
+  }
+  .ring-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Kanit', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text);
+  }
+  .summary-stats { flex: 1; min-width: 0; }
+  .answer-summary-title {
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    font-size: 13.5px;
+    margin: 0 0 8px;
+    color: var(--text-soft);
+  }
+  .stat-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .stat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  .stat-pill.right { background: var(--success-bg); color: var(--success); }
+  .stat-pill.wrong { background: var(--error-bg); color: var(--error); }
+  .stat-pill.pending { background: var(--track); color: var(--text-soft); }
+  .answer-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .answer-chip {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Kanit', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    background: transparent;
+    color: var(--text-soft);
+    border: 1.5px dashed var(--track);
+    transition: transform .12s ease;
+  }
+  .answer-chip.right {
+    background: linear-gradient(135deg, var(--success), #17d9a3);
+    color: white;
+    border: none;
+  }
+  .answer-chip.wrong {
+    background: linear-gradient(135deg, var(--error), #ff9494);
+    color: white;
+    border: none;
+  }
+
+  .quiz-body.hide { display: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+
+  button:focus-visible, .choice:focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  .present-btn {
+    position: fixed;
+    left: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: var(--card, #fff);
+    border: 1.5px solid var(--track);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+    z-index: 50;
+    transition: border-color .2s ease, transform .15s ease;
+  }
+  .present-btn:hover { border-color: var(--primary); transform: translateY(-2px); }
+  .present-btn .icon { font-size: 22px; line-height: 1; }
+  .present-btn.is-active { border-color: var(--primary); color: var(--primary); }
+
+  /* ---------- Game feel additions ---------- */
+  .hearts { display: flex; gap: 3px; font-size: 17px; }
+  .hearts span { transition: transform .25s ease, opacity .25s ease; }
+  .hearts span.lost { opacity: .25; transform: scale(.7); filter: grayscale(1); }
+
+  .score-chip.game { position: relative; overflow: visible; }
+  .combo-badge {
+    position: absolute;
+    top: -10px; right: -10px;
+    background: linear-gradient(135deg, #FF6B6B, #FFA36C);
+    color: white;
+    font-family: 'Kanit', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    display: none;
+    box-shadow: 0 3px 8px rgba(255,107,107,.4);
+    animation: comboPop .3s ease;
+  }
+  .combo-badge.show { display: block; }
+  @keyframes comboPop {
+    0% { transform: scale(.4); opacity: 0; }
+    60% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+
+  .floater {
+    position: fixed;
+    font-family: 'Kanit', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--success);
+    pointer-events: none;
+    z-index: 200;
+    animation: floatUp 1s ease forwards;
+    text-shadow: 0 2px 8px rgba(0,0,0,.15);
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(0) scale(.8); opacity: 0; }
+    15% { transform: translateY(-8px) scale(1.15); opacity: 1; }
+    100% { transform: translateY(-70px) scale(1); opacity: 0; }
+  }
+
+  .heart-lost-toast {
+    position: fixed;
+    top: 18px; left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: var(--error);
+    color: white;
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    opacity: 0;
+    z-index: 200;
+    transition: opacity .25s ease, transform .25s ease;
+    box-shadow: 0 6px 18px rgba(0,0,0,.2);
+  }
+  .heart-lost-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .result .big-score.counting { color: var(--primary); }
+  .result .score-max { font-size: 20px; color: var(--text-soft); font-weight: 500; }
+  .result.gameover .big-emoji-result { font-size: 48px; margin-bottom: 6px; }
+  .result.gameover .big-score { color: var(--error); }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="top-row">
+    <div class="hearts" id="hearts"></div>
+    <span id="q-counter">ข้อ 1 / 10</span>
+    <span class="score-chip game">
+      🏆 <span id="score-display">0</span> คะแนน
+      <span class="combo-badge" id="combo-badge">COMBO!</span>
+    </span>
+  </div>
+  <div class="track"><div class="fill" id="progress-fill"></div></div>
+
+  <div class="card">
+    <div class="quiz-body" id="quiz-body">
+      <div class="card-header">
+        <p class="eyebrow">เกมคำถาม-คำตอบ · Canva &amp; Canva AI</p>
+        <button class="pause-btn" id="pause-btn" title="หยุดและดูผลตอนนี้">⏸ หยุดดูผล</button>
+      </div>
+      <h1 class="question" id="question-text"></h1>
+      <div class="choices" id="choices"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="next-btn">ข้อต่อไป →</button>
+    </div>
+
+    <div class="result" id="result">
+      <div class="stars" id="result-stars">⭐⭐⭐</div>
+      <div class="big-score" id="result-score">0</div>
+      <p class="score-max">คะแนนรวม</p>
+      <h2 id="result-title">เก่งมากเลย!</h2>
+      <p class="sub" id="result-sub">ตอบถูกกี่ข้อ มาดูกัน</p>
+
+      <div class="answer-summary">
+        <div class="summary-top">
+          <div class="ring-wrap">
+            <svg class="ring" viewBox="0 0 80 80">
+              <circle class="ring-bg" cx="40" cy="40" r="34"></circle>
+              <circle class="ring-fg" id="ring-fg" cx="40" cy="40" r="34"></circle>
+            </svg>
+            <div class="ring-label" id="ring-label">0%</div>
+          </div>
+          <div class="summary-stats">
+            <p class="answer-summary-title" id="answer-summary-title">สรุปคำตอบ</p>
+            <div class="stat-row">
+              <span class="stat-pill right">✓ <b id="stat-right">0</b> ถูก</span>
+              <span class="stat-pill wrong">✕ <b id="stat-wrong">0</b> ผิด</span>
+              <span class="stat-pill pending">– <b id="stat-pending">0</b> ยังไม่ตอบ</span>
+            </div>
+          </div>
+        </div>
+        <div class="answer-grid" id="answer-grid"></div>
+      </div>
+
+      <div class="result-actions">
+        <button class="continue-btn" id="continue-btn">เล่นต่อ →</button>
+        <button class="retry-btn" id="retry-btn">เล่นอีกครั้ง</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="heart-lost-toast" id="heart-toast">💔 เสียหัวใจ! เหลือ <span id="heart-toast-count">4</span> ดวง</div>
+
+<script>
+const questions = [
+  {
+    q: "ขั้นตอนแรกในการสร้างชิ้นงานอย่างง่ายใน Canva คืออะไร?",
+    choices: ["กด Download", "เลือกเทมเพลต", "เปิด Canva แล้วเลือก \"สร้างการออกแบบใหม่\"", "แก้ไขข้อความ"],
+    correct: 2,
+    explain: "ต้องเริ่มจากเปิด Canva แล้วเลือก \"สร้างการออกแบบใหม่\" ก่อน จึงจะเลือกเทมเพลตและแก้ไขได้"
+  },
+  {
+    q: "เครื่องมือ Text ใน Canva ใช้ทำอะไร?",
+    choices: ["เปลี่ยนพื้นหลัง", "เพิ่ม/แก้ไขตัวอักษร ปรับฟอนต์ สี ขนาด", "นำรูปของตัวเองเข้ามาใช้งาน", "บันทึกไฟล์"],
+    correct: 1,
+    explain: "Text ใช้สำหรับเพิ่มหรือแก้ไขตัวอักษร ปรับฟอนต์ สี และขนาดของข้อความในชิ้นงาน"
+  },
+  {
+    q: "เครื่องมือ Upload ใน Canva ใช้ทำอะไร?",
+    choices: ["เพิ่มไอคอนตกแต่ง", "นำรูปภาพของตัวเองเข้ามาใช้งาน", "เปลี่ยนขนาดชิ้นงาน", "แนะนำเทมเพลต"],
+    correct: 1,
+    explain: "Upload ใช้สำหรับนำรูปภาพหรือไฟล์ของตัวเองเข้ามาใช้ในชิ้นงาน"
+  },
+  {
+    q: "ขั้นตอนแรกในการสร้างเกมจับคู่ (Matching Game) ด้วย Canva คืออะไร?",
+    choices: ["ตกแต่งด้วย Elements", "Download ชิ้นงาน", "ค้นหาเทมเพลต \"เกมจับคู่\" หรือ \"Matching Game\"", "ใช้ Magic Write คิดคำถาม"],
+    correct: 2,
+    explain: "ต้องเริ่มจากค้นหาเทมเพลตเกมจับคู่ก่อน แล้วจึงใช้ Magic Write และ Elements ช่วยเติมเนื้อหา"
+  },
+  {
+    q: "ในการสร้างเกมคำถาม-คำตอบ (Quiz) ควรใช้ฟีเจอร์ใดช่วยสร้างคำถามและตัวเลือก?",
+    choices: ["Resize", "Magic Write", "Background", "Upload"],
+    correct: 1,
+    explain: "Magic Write ช่วยสร้างคำถามและตัวเลือกคำตอบจากหัวข้อที่กำหนดได้อัตโนมัติ"
+  },
+  {
+    q: "Canva เหมาะสำหรับผู้ใช้งานลักษณะใดมากที่สุด?",
+    choices: ["ผู้ที่มีพื้นฐานการออกแบบขั้นสูงเท่านั้น", "ผู้ที่ไม่มีพื้นฐานการออกแบบมาก่อน", "ผู้ที่เขียนโปรแกรมได้เท่านั้น", "ผู้ที่ใช้กล้องถ่ายภาพมืออาชีพ"],
+    correct: 1,
+    explain: "Canva ออกแบบมาให้ใช้งานง่าย มีเทมเพลตสำเร็จรูป เหมาะกับผู้ที่ไม่มีพื้นฐานการออกแบบมาก่อน"
+  },
+  {
+    q: "ก่อน Download เกมคำถาม-คำตอบ ควรทำอะไรเป็นขั้นตอนสุดท้าย?",
+    choices: ["ลบเทมเพลตทิ้ง", "ตรวจสอบและแก้ไขคำถามให้ถูกต้องเหมาะสมกับเนื้อหา", "เปลี่ยนขนาดชิ้นงาน", "อัปโหลดรูปใหม่ทั้งหมด"],
+    correct: 1,
+    explain: "ควรตรวจสอบและแก้ไขคำถามให้ถูกต้องเหมาะสมกับเนื้อหาก่อนตกแต่งและ Download"
+  },
+  {
+    q: "โดยรวมแล้ว Canva AI ช่วยผู้ใช้งานอย่างไร?",
+    choices: ["ลบชิ้นงานอัตโนมัติ", "ช่วยสร้างชิ้นงานได้รวดเร็วขึ้นโดยไม่ต้องออกแบบเองทั้งหมด", "เปลี่ยนภาษาในชิ้นงาน", "ส่งอีเมลอัตโนมัติ"],
+    correct: 1,
+    explain: "Canva AI ช่วยให้ผู้ใช้งานสร้างสรรค์ชิ้นงานได้รวดเร็วขึ้น โดยไม่ต้องออกแบบเองทั้งหมด"
+  },
+  {
+    q: "เกมคำถาม-คำตอบที่สร้างขึ้นเหมาะนำไปใช้ทำอะไรมากที่สุด?",
+    choices: ["ใช้แทนแบบทดสอบวัดความเข้าใจของนักเรียนหลังเรียน", "ใช้เก็บรูปภาพส่วนตัว", "ใช้แทนโปรแกรมคำนวณเลข", "ใช้แทนโปรแกรมตัดต่อวิดีโอ"],
+    correct: 0,
+    explain: "เกมคำถาม-คำตอบช่วยให้นักเรียนได้ทบทวนและวัดความเข้าใจเนื้อหาหลังเรียนด้วยวิธีที่สนุกขึ้น"
+  },
+  {
+    q: "หลังจากตกแต่งเกมด้วย Elements และ Text เสร็จแล้ว ควรทำขั้นตอนใดต่อ?",
+    choices: ["ลบเทมเพลตทิ้งแล้วเริ่มใหม่", "Download หรือแชร์ลิงก์ให้นักเรียนเข้าเล่น", "เปลี่ยน Background อีกครั้ง", "อัปโหลดรูปใหม่ทั้งหมด"],
+    correct: 1,
+    explain: "เมื่อตกแต่งเสร็จแล้ว ขั้นตอนสุดท้ายคือ Download หรือแชร์ลิงก์ให้นักเรียนเข้าเล่นได้ทันที"
+  }
+];
+
+const letters = ["ก", "ข", "ค", "ง"];
+let current = 0;
+let score = 0;
+let streak = 0;
+let lives = 5;
+let answered = false;
+let gameOver = false;
+let answeredLog = [];
+const MAX_SCORE = 100;
+
+const qCounter = document.getElementById("q-counter");
+const scoreDisplay = document.getElementById("score-display");
+const progressFill = document.getElementById("progress-fill");
+const questionText = document.getElementById("question-text");
+const choicesEl = document.getElementById("choices");
+const feedbackEl = document.getElementById("feedback");
+const nextBtn = document.getElementById("next-btn");
+const quizBody = document.getElementById("quiz-body");
+const resultEl = document.getElementById("result");
+const retryBtn = document.getElementById("retry-btn");
+const heartsEl = document.getElementById("hearts");
+const comboBadge = document.getElementById("combo-badge");
+const heartToast = document.getElementById("heart-toast");
+const heartToastCount = document.getElementById("heart-toast-count");
+const pauseBtn = document.getElementById("pause-btn");
+const continueBtn = document.getElementById("continue-btn");
+
+function renderHearts() {
+  heartsEl.innerHTML = "";
+  for (let i = 0; i < 5; i++) {
+    const s = document.createElement("span");
+    s.textContent = "❤️";
+    if (i >= lives) s.classList.add("lost");
+    heartsEl.appendChild(s);
+  }
+}
+
+function renderQuestion() {
+  answered = false;
+  const item = questions[current];
+  qCounter.textContent = `ข้อ ${current + 1} / ${questions.length}`;
+  progressFill.style.width = `${((current) / questions.length) * 100 + 5}%`;
+  questionText.textContent = item.q;
+  feedbackEl.className = "feedback";
+  feedbackEl.textContent = "";
+  nextBtn.classList.remove("show");
+  choicesEl.innerHTML = "";
+
+  item.choices.forEach((choice, i) => {
+    const btn = document.createElement("button");
+    btn.className = "choice";
+    btn.innerHTML = `<span class="letter">${letters[i]}.</span><span>${choice}</span>`;
+    btn.addEventListener("click", () => handleAnswer(i, btn));
+    choicesEl.appendChild(btn);
+  });
+}
+
+function showFloater(text, anchorEl) {
+  const rect = anchorEl.getBoundingClientRect();
+  const f = document.createElement("div");
+  f.className = "floater";
+  f.textContent = text;
+  f.style.left = (rect.left + rect.width / 2 - 20) + "px";
+  f.style.top = (rect.top) + "px";
+  document.body.appendChild(f);
+  setTimeout(() => f.remove(), 1000);
+}
+
+function showHeartToast() {
+  heartToastCount.textContent = lives;
+  heartToast.classList.add("show");
+  setTimeout(() => heartToast.classList.remove("show"), 1200);
+}
+
+function handleAnswer(index, btnEl) {
+  if (answered || gameOver) return;
+  answered = true;
+  const item = questions[current];
+  const allButtons = choicesEl.querySelectorAll(".choice");
+  allButtons.forEach((b, i) => {
+    b.disabled = true;
+    if (i === item.correct) {
+      b.classList.add("correct");
+    } else if (i === index) {
+      b.classList.add("wrong");
+    } else {
+      b.classList.add("dim");
+    }
+  });
+
+  if (index === item.correct) {
+    streak++;
+    const earned = 10 + streak * 10;
+    score += earned;
+    scoreDisplay.textContent = score;
+    showFloater(`+${earned}`, btnEl);
+    answeredLog[current] = { correct: true };
+
+    if (streak >= 2) {
+      comboBadge.textContent = `COMBO x${streak}!`;
+      comboBadge.classList.remove("show");
+      void comboBadge.offsetWidth;
+      comboBadge.classList.add("show");
+    }
+
+    feedbackEl.className = "feedback show correct";
+    feedbackEl.innerHTML = `<b>ถูกต้อง! +${earned} คะแนน 🎉</b><br>${item.explain}`;
+  } else {
+    streak = 0;
+    lives--;
+    answeredLog[current] = { correct: false };
+    renderHearts();
+    showHeartToast();
+    feedbackEl.className = "feedback show wrong";
+    feedbackEl.innerHTML = `<b>ยังไม่ถูกนะ 💔 เสียหัวใจ 1 ดวง</b><br>${item.explain}`;
+  }
+
+  if (lives <= 0) {
+    setTimeout(showGameOver, 900);
+    return;
+  }
+
+  nextBtn.classList.add("show");
+  nextBtn.textContent = current === questions.length - 1 ? "ดูผลคะแนน →" : "ข้อต่อไป →";
+}
+
+nextBtn.addEventListener("click", () => {
+  current++;
+  if (current < questions.length) {
+    renderQuestion();
+  } else {
+    showResult();
+  }
+});
+
+function animateScoreCount(target) {
+  const el = document.getElementById("result-score");
+  el.classList.add("counting");
+  let cur = 0;
+  const step = Math.max(1, Math.round(target / 30));
+  const timer = setInterval(() => {
+    cur = Math.min(target, cur + step);
+    el.textContent = cur;
+    if (cur >= target) clearInterval(timer);
+  }, 25);
+}
+
+function updateAnswerSummary() {
+  const grid = document.getElementById("answer-grid");
+  grid.innerHTML = "";
+  let correctCount = 0, attemptedCount = 0;
+  questions.forEach((q, i) => {
+    const chip = document.createElement("div");
+    chip.className = "answer-chip";
+    const log = answeredLog[i];
+    if (log) {
+      attemptedCount++;
+      if (log.correct) {
+        correctCount++;
+        chip.classList.add("right");
+        chip.textContent = "✓";
+      } else {
+        chip.classList.add("wrong");
+        chip.textContent = "✕";
+      }
+    } else {
+      chip.textContent = i + 1;
+    }
+    grid.appendChild(chip);
+  });
+
+  const wrongCount = attemptedCount - correctCount;
+  const pendingCount = questions.length - attemptedCount;
+  document.getElementById("stat-right").textContent = correctCount;
+  document.getElementById("stat-wrong").textContent = wrongCount;
+  document.getElementById("stat-pending").textContent = pendingCount;
+
+  const pct = attemptedCount > 0 ? Math.round((correctCount / attemptedCount) * 100) : 0;
+  const circumference = 2 * Math.PI * 34;
+  const ringFg = document.getElementById("ring-fg");
+  ringFg.style.strokeDasharray = `${circumference}`;
+  ringFg.style.strokeDashoffset = `${circumference - (circumference * pct) / 100}`;
+  document.getElementById("ring-label").textContent = `${pct}%`;
+
+  const titleEl = document.getElementById("answer-summary-title");
+  titleEl.textContent = attemptedCount === 0 ? "ยังไม่ได้ตอบข้อไหนเลย" : "สรุปคำตอบที่ทำไปแล้ว";
+  return { correctCount, attemptedCount };
+}
+
+function showResult() {
+  progressFill.style.width = "100%";
+  quizBody.classList.add("hide");
+  resultEl.classList.remove("gameover", "paused");
+  resultEl.classList.add("show");
+  retryBtn.textContent = "เล่นอีกครั้ง";
+  animateScoreCount(score);
+
+  const pct = score / MAX_SCORE;
+  let stars = "⭐";
+  let title = "ลองใหม่อีกครั้งนะ";
+  let sub = "กลับไปทบทวนเนื้อหาแล้วมาลองใหม่ได้เลย";
+  if (score >= MAX_SCORE) {
+    stars = "⭐⭐⭐";
+    title = "เก่งมากเลย! 🎉";
+    sub = "เข้าใจเรื่อง Canva และ Canva AI เป็นอย่างดี";
+  } else if (pct >= 0.5) {
+    stars = "⭐⭐";
+    title = "ทำได้ดีมาก!";
+    sub = "เกือบครบแล้ว ลองทบทวนอีกนิดนะ";
+  }
+  document.getElementById("result-stars").textContent = stars;
+  document.getElementById("result-title").textContent = title;
+  document.getElementById("result-sub").textContent = sub;
+  updateAnswerSummary();
+}
+
+function showGameOver() {
+  gameOver = true;
+  progressFill.style.width = "100%";
+  quizBody.classList.add("hide");
+  resultEl.classList.remove("paused");
+  resultEl.classList.add("show", "gameover");
+  retryBtn.textContent = "เล่นอีกครั้ง";
+  animateScoreCount(score);
+  document.getElementById("result-stars").textContent = "💔";
+  document.getElementById("result-title").textContent = "หัวใจหมด! เกมโอเวอร์";
+  document.getElementById("result-sub").textContent = `ตอบไปได้ ${current + 1} จาก ${questions.length} ข้อ ลองใหม่อีกครั้งนะ`;
+  updateAnswerSummary();
+}
+
+function showPauseSummary() {
+  const { attemptedCount: attempted } = updateAnswerSummary();
+  progressFill.style.width = `${(attempted / questions.length) * 100}%`;
+  quizBody.classList.add("hide");
+  resultEl.classList.remove("gameover");
+  resultEl.classList.add("show", "paused");
+  animateScoreCount(score);
+
+  const pct = score / MAX_SCORE;
+  let stars = "⏸️";
+  if (attempted > 0) {
+    stars = score >= MAX_SCORE ? "⭐⭐⭐" : pct >= 0.5 ? "⭐⭐" : "⭐";
+  }
+  document.getElementById("result-stars").textContent = stars;
+  document.getElementById("result-title").textContent = "หยุดพักไว้ก่อน";
+  document.getElementById("result-sub").textContent =
+    attempted >= questions.length
+      ? `ตอบครบ ${questions.length} ข้อแล้ว พร้อมดูผลสรุปได้เลย`
+      : `ตอบไปแล้ว ${attempted} จาก ${questions.length} ข้อ • ได้ ${score} คะแนน`;
+  continueBtn.textContent = attempted >= questions.length ? "ดูผลสรุป →" : "เล่นต่อ →";
+  retryBtn.textContent = "เล่นใหม่ตั้งแต่ต้น";
+}
+
+pauseBtn.addEventListener("click", () => {
+  if (gameOver || lives <= 0) return;
+  showPauseSummary();
+});
+
+continueBtn.addEventListener("click", () => {
+  resultEl.classList.remove("show", "paused");
+  quizBody.classList.remove("hide");
+  if (answered) {
+    current++;
+    if (current < questions.length) {
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  } else {
+    renderQuestion();
+  }
+});
+
+retryBtn.addEventListener("click", () => {
+  current = 0;
+  score = 0;
+  streak = 0;
+  lives = 5;
+  gameOver = false;
+  answeredLog = [];
+  scoreDisplay.textContent = "0";
+  renderHearts();
+  quizBody.classList.remove("hide");
+  resultEl.classList.remove("show", "gameover", "paused");
+  renderQuestion();
+});
+
+renderHearts();
+renderQuestion();
+</script>
+</body>
+</html>
